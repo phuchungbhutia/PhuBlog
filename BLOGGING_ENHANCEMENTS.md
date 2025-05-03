@@ -4,13 +4,11 @@ Here’s a **Markdown blog template** that you can use to structure your posts c
 
 ```markdown
 
----
 title: "Your Blog Post Title"
 date: YYYY-MM-DD
 categories: [Category1, Category2]
 tags: [Tag1, Tag2, Tag3]
 layout: post
----
 
 # 🚀 Your Blog Post Title
 
@@ -22,11 +20,8 @@ Welcome to **PhuBlog**! This post covers **[topic]**, exploring its significance
 - ✅ **Point 3:** Additional insights.
 
 ## 📌 Step-by-Step Guide
-```bash
-# Example command or script
-echo "Hello, PhuBlog!"
-```
-
+  # Example command or script
+ 
 ## 🎨 Image or Infographic
 ![Alt Text](https://yourwebsite.com/image.png)
 
@@ -37,12 +32,13 @@ echo "Hello, PhuBlog!"
 ## 💬 Comments & Discussion
 Feel free to share your thoughts below or **connect with me on [Twitter](https://twitter.com/phuchungbhutia)!**
 
----
 🔹 **Published by:** Your Name  
 🔹 **Date:** YYYY-MM-DD  
 🔹 **Tags:** #Keyword1, #Keyword2  
 
 ```
+
+---
 
 ✅ **Customizations Included:**  
 - **Metadata for SEO** (title, date, categories, tags).  
