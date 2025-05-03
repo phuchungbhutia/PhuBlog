@@ -12,6 +12,10 @@ gem "logger"
 gem "base64"
 gem "safe_yaml"
 
+gem "bigdecimal"
+
+gem "wdm", ">= 0.1.0" if Gem.win_platform?
+
 group :development do
   gem "webrick"              # Required for Ruby 3+
 end
