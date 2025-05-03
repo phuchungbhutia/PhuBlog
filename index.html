@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PhuBlog – Your Personal Tech Blog</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Lunr.js for search -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
+  <!-- Chart.js for live blog stats -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <h1 id="animatedTitle">🚀 Welcome to PhuBlog</h1>
+    <nav>
+      <a href="/about.html">About</a> | 
+      <a href="/posts.html">Posts</a> | 
+      <a href="/contact.html">Contact</a>
+    </nav>
+    <!-- Dark Mode Toggle Button -->
+    <button id="theme-toggle" class="button">🌙 Dark Mode</button>
+  </header>
+
+  <main>
+    <!-- Auto-Index: List of Blog Categories -->
+    <section>
+      <h2>📂 Blog Categories</h2>
+      <ul>
+        {% for category in site.categories %}
+          <li><a href="/categories/{{ category | slugify }}">{{ category }}</a></li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <!-- Advanced Search Section -->
+    <section>
+      <h2>🔎 Search & Filter Posts</h2>
+      <select id="filter">
+        <option value="all">All Posts</option>
+        <option value="latest">Latest Posts</option>
+        <option value="popular">Trending Posts</option>
+        <option value="tech">Tech</option>
+        <option value="tutorials">Tutorials</option>
+      </select>
+      <input type="text" id="searchBox" placeholder="Search blog..." onkeyup="searchBlog()">
+      <ul id="results"></ul>
+    </section>
+
+    <!-- API Integration Widgets -->
+    <section>
+      <h2>🌦 Live Weather</h2>
+      <p id="weather">Fetching data...</p>
+    </section>
+
+    <section>
+      <h2>💹 Stock Prices</h2>
+      <p id="stocks">Fetching data...</p>
+    </section>
+
+    <section>
+      <h2>📰 Latest Tech News</h2>
+      <ul id="news"></ul>
+    </section>
+
+    <section>
+      <h2>💡 Quote of the Day</h2>
+      <p id="quote">Loading...</p>
+    </section>
+
+    <!-- Live Blog Stats -->
+    <section>
+      <h2>📊 Blog Stats</h2>
+      <canvas id="statsChart"></canvas>
+      <script>
+        var ctx = document.getElementById("statsChart").getContext("2d");
+        var statsChart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: ["Jan", "Feb", "Mar", "Apr"],
+            datasets: [{
+              label: "Monthly Visitors",
+              data: [1200, 1800, 2200, 3500],
+              backgroundColor: "rgba(54, 162, 235, 0.6)"
+            }]
+          }
+        });
+      </script>
+    </section>
+
+    <!-- Social Media Sharing -->
+    <section>
+      <h2>📢 Share PhuBlog</h2>
+      <div class="share-buttons">
+        <a href="https://twitter.com/intent/tweet?text=Check+out+PhuBlog!&url=https://phuchungbhutia.github.io/" class="button">🐦 Twitter</a>
+        <a href="https://www.facebook.com/sharer.php?u=https://phuchungbhutia.github.io/" class="button">📘 Facebook</a>
+        <a href="https://www.linkedin.com/shareArticle?mini=true&url=https://phuchungbhutia.github.io/" class="button">💼 LinkedIn</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 PhuBlog | Follow me on <a href="https://twitter.com/phuchungbhutia">Twitter</a></p>
+  </footer>
+
+  <!-- Scroll-to-Top Button -->
+  <button id="scrollTop" class="button">⬆ Scroll to Top</button>
+
+  <!-- Inline Scripts for Enhancements -->
+  <script src="js/search.js"></script>
+  <script>
+    // Dark Mode Toggle
+    document.getElementById("theme-toggle").addEventListener("click", function() {
+      document.body.classList.toggle("dark-mode");
+    });
+
+    // Smooth Scroll-To-Top
+    document.getElementById("scrollTop").addEventListener("click", function() {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    // Animated Title Change
+    let messages = ["🚀 Welcome to PhuBlog", "💡 Explore New Ideas", "🔥 Get Inspired"];
+    let index = 0;
+    setInterval(function() {
+      index = (index + 1) % messages.length;
+      document.getElementById("animatedTitle").innerText = messages[index];
+    }, 3000);
+
+    // Weather Widget
+    async function getWeather() {
+      let response = await fetch("https://api.weatherapi.com/v1/current.json?key=YOUR_API_KEY&q=Kolkata");
+      let data = await response.json();
+      document.getElementById("weather").innerText = `🌡 ${data.current.temp_c}°C | ${data.current.condition.text}`;
+    }
+    getWeather();
+
+    // Stock Prices Widget
+    async function getStocks() {
+      let response = await fetch("https://api.example.com/stocks?symbol=AAPL");
+      let data = await response.json();
+      document.getElementById("stocks").innerText = `📈 Apple: $${data.price}`;
+    }
+    getStocks();
+
+    // Latest News Widget
+    async function getNews() {
+      let response = await fetch("https://newsapi.org/v2/top-headlines?category=technology&apiKey=YOUR_API_KEY");
+      let data = await response.json();
+      let newsList = document.getElementById("news");
+      newsList.innerHTML = "";
+      data.articles.slice(0, 5).forEach(article => {
+        let li = document.createElement("li");
+        li.innerHTML = `<a href="${article.url}" target="_blank">${article.title}</a>`;
+        newsList.appendChild(li);
+      });
+    }
+    getNews();
+
+    // Quote of the Day Widget
+    async function getQuote() {
+      let response = await fetch("https://api.quotable.io/random");
+      let data = await response.json();
+      document.getElementById("quote").innerText = `"${data.content}" - ${data.author}`;
+    }
+    getQuote();
+  </script>
+</body>
+</html>
