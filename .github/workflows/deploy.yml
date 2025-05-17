@@ -2,30 +2,35 @@ name: Generate Blogs JSON
 
 on:
   push:
-    paths:
-      - 'blogs/**.md'
-      - 'scripts/generate-blogs-json.js'
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
-  build:
+  generate-json:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: Setup Node.js environment
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: '18'
+
+      - name: Install dependencies (if any)
+        run: npm install || echo "No dependencies"
 
       - name: Generate blogs.json
         run: node scripts/generate-blogs-json.js
 
-      - name: Commit changes
+      - name: Commit and push updated blogs.json
         run: |
-          git config --global user.name 'phubot'
-          git config --global user.email 'phubot@example.com'
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add blogs.json
-          git commit -m '🤖 Auto-update blogs.json' || echo "No changes to commit"
+          git diff --cached --quiet || git commit -m "Update blogs.json [skip ci]"
           git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
