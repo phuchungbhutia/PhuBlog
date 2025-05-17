@@ -1,0 +1,7 @@
+{
+    "name": "phublog",
+    "scripts": {
+      "build": "node scripts/generate-blogs-json.js"
+    },
+    "type": "module"
+  }

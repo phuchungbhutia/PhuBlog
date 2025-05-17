@@ -1,32 +1,31 @@
-name: Deploy PhuBlog
+name: Generate Blogs JSON
 
 on:
   push:
-    branches:
-      - main  # Adjust if your branch is different
+    paths:
+      - 'blogs/**.md'
+      - 'scripts/generate-blogs-json.js'
+  workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+      - name: Checkout Repo
+        uses: actions/checkout@v3
 
-      - name: Setup Ruby & Jekyll
-        uses: ruby/setup-ruby@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          ruby-version: '3.x'
+          node-version: '20'
 
-      - name: Install Dependencies
+      - name: Generate blogs.json
+        run: node scripts/generate-blogs-json.js
+
+      - name: Commit changes
         run: |
-          gem install jekyll bundler
-          bundle install
-
-      - name: Build Jekyll Site
-        run: bundle exec jekyll build
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: _site
+          git config --global user.name 'phubot'
+          git config --global user.email 'phubot@example.com'
+          git add blogs.json
+          git commit -m '🤖 Auto-update blogs.json' || echo "No changes to commit"
+          git push
