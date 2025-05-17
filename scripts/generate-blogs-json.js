@@ -1,59 +1,83 @@
-const fs = require('fs');
-const path = require('path');
+// scripts/generate-blogs-json.js
+import fs from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const blogsDir = path.join(__dirname, '..', 'blogs');
-const outputFile = path.join(__dirname, '..', 'blogs.json');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-function walkDir(dir) {
+const blogsDir = path.join(__dirname, '../blogs');
+const outputFile = path.join(__dirname, '../blogs.json');
+
+// Helper function to extract metadata from markdown file content
+function extractMetadata(content) {
+  const lines = content.split('\n').slice(0, 10); // check first 10 lines
+  let title = '';
+  let category = '';
+  let description = '';
+
+  for (const line of lines) {
+    if (line.toLowerCase().startsWith('title:')) {
+      title = line.slice(6).trim();
+    } else if (line.toLowerCase().startsWith('category:')) {
+      category = line.slice(9).trim();
+    } else if (line.toLowerCase().startsWith('description:')) {
+      description = line.slice(12).trim();
+    }
+  }
+
+  return { title, category, description };
+}
+
+// Recursively scan blogs directory for markdown files
+async function scanMarkdownFiles(dir) {
   let results = [];
-  const list = fs.readdirSync(dir);
-  list.forEach(file => {
-    const fullPath = path.join(dir, file);
-    const stat = fs.statSync(fullPath);
-    if (stat && stat.isDirectory()) {
-      results = results.concat(walkDir(fullPath));
-    } else if (file.endsWith('.md')) {
+  const entries = await fs.readdir(dir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      const nested = await scanMarkdownFiles(fullPath);
+      results = results.concat(nested);
+    } else if (entry.isFile() && entry.name.endsWith('.md')) {
       results.push(fullPath);
     }
-  });
+  }
   return results;
 }
 
-function parseMetadata(content) {
-  // Extract title, category, description from first lines like:
-  // title: ...
-  // category: ...
-  // description: ...
-  const lines = content.split(/\r?\n/);
-  let metadata = {};
-  for (let i = 0; i < Math.min(10, lines.length); i++) {
-    const line = lines[i].trim();
-    if (line.startsWith('title:')) metadata.title = line.slice(6).trim();
-    else if (line.startsWith('category:')) metadata.category = line.slice(9).trim();
-    else if (line.startsWith('description:')) metadata.description = line.slice(12).trim();
+async function generateBlogsJson() {
+  try {
+    const files = await scanMarkdownFiles(blogsDir);
+    const blogs = [];
+
+    for (const filePath of files) {
+      const content = await fs.readFile(filePath, 'utf-8');
+      const metadata = extractMetadata(content);
+
+      if (!metadata.title || !metadata.category) {
+        console.warn(`Skipping file with missing title or category: ${filePath}`);
+        continue;
+      }
+
+      // Get relative POSIX-style path starting from project root
+      const relativePath = path.relative(path.join(__dirname, '..'), filePath).split(path.sep).join('/');
+
+      blogs.push({
+        title: metadata.title,
+        category: metadata.category,
+        description: metadata.description,
+        file: `./${relativePath}`,
+      });
+    }
+
+    // Write JSON to output file
+    await fs.writeFile(outputFile, JSON.stringify(blogs, null, 2), 'utf-8');
+    console.log(`Generated ${outputFile} with ${blogs.length} blog entries.`);
+  } catch (err) {
+    console.error('Error generating blogs.json:', err);
   }
-  return metadata;
 }
 
-function main() {
-  const mdFiles = walkDir(blogsDir);
-  const blogs = mdFiles.map(filePath => {
-    const content = fs.readFileSync(filePath, 'utf-8');
-    const metadata = parseMetadata(content);
-    const relativePath = './' + path.posix.join('blogs', path.relative(blogsDir, filePath).split(path.sep).join('/'));
-    return {
-      title: metadata.title || 'Untitled',
-      category: metadata.category || 'Uncategorized',
-      description: metadata.description || '',
-      file: relativePath
-    };
-  });
-
-  // Sort blogs by title for consistency
-  blogs.sort((a,b) => a.title.localeCompare(b.title));
-
-  fs.writeFileSync(outputFile, JSON.stringify(blogs, null, 2), 'utf-8');
-  console.log(`Generated blogs.json with ${blogs.length} entries.`);
-}
-
-main();
+// Run the generator
+generateBlogsJson();
