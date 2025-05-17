@@ -1,0 +1,46 @@
+name: Generate blogs.json and commit
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  generate-json:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Show environment info
+        run: |
+          echo "Current branch: $GITHUB_REF"
+          echo "Changed files since last commit:"
+          git diff --name-only ${{ github.sha }} ${{ github.sha }}~1 || echo "No previous commit"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Generate blogs.json
+        run: node scripts/generate-blogs-json.js
+
+      - name: Show git status after generation
+        run: |
+          git status
+          git diff
+
+      - name: Commit & Push blogs.json if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add blogs.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Update blogs.json [skip ci]"
+            git push
+          else
+            echo "No changes to commit"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
