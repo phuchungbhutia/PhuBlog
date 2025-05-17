@@ -7,21 +7,17 @@ on:
   workflow_dispatch:
 
 jobs:
-  generate-json:
+  build:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
 
-      - name: Show environment info
-        run: |
-          echo "Current branch: $GITHUB_REF"
-          echo "Changed files since last commit:"
-          git diff --name-only ${{ github.sha }} ${{ github.sha }}~1 || echo "No previous commit"
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: 18
 
       - name: Generate blogs.json
         run: node scripts/generate-blogs-json.js
