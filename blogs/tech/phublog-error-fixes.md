@@ -1,6 +1,5 @@
 title: Common Errors in Building PhuBlog & How to Fix Them
-date: 2025-05-17
-categories:Development
+category: Development
 description: A comprehensive guide to common errors encountered while building the PhuBlog project, with clear explanations and step-by-step fixes.
 
 ---
@@ -198,5 +197,3 @@ Building PhuBlog was a great learning journey. Facing and fixing these errors wi
 ---
 
 *— PhuBlog Team*
-
-
