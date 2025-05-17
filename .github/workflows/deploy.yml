@@ -4,19 +4,19 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'blogs/**'
-      - 'scripts/**'
-      - 'package.json'
   workflow_dispatch:
 
 jobs:
   generate-json:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+
+      - name: Show environment info
+        run: |
+          echo "Current branch: $GITHUB_REF"
+          echo "Changed files since last commit:"
+          git diff --name-only ${{ github.sha }} ${{ github.sha }}~1 || echo "No previous commit"
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -26,7 +26,7 @@ jobs:
       - name: Generate blogs.json
         run: node scripts/generate-blogs-json.js
 
-      - name: Check for changes
+      - name: Show git status after generation
         run: |
           git status
           git diff
