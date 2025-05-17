@@ -1,18 +1,7 @@
----
 title: Common Errors in Building PhuBlog & How to Fix Them
 date: 2025-05-17
-categories:
-
-- Development
-- Troubleshooting
-  tags:
-- nodejs
-- github-actions
-- github-pages
-- javascript
-- css
-- web-development
-  summary: A comprehensive guide to common errors encountered while building the PhuBlog project, with clear explanations and step-by-step fixes.
+categories:Development
+description: A comprehensive guide to common errors encountered while building the PhuBlog project, with clear explanations and step-by-step fixes.
 
 ---
 
