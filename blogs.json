@@ -20,7 +20,7 @@
   {
     "title": "Common Errors in Building PhuBlog & How to Fix Them",
     "category": "Development",
-    "description": "A comprehensive guide to common errors encountered while building the PhuBlog project, with clear explanations and step-by-step fixes.",
+    "description": "A detailed guide covering common errors faced while building the PhuBlog project and step-by-step solutions to fix them.",
     "file": "./blogs/tech/phublog-error-fixes.md"
   }
 ]
