@@ -16,5 +16,11 @@
     "category": "Programming",
     "description": "Learn the fundamental concepts of JavaScript including variables, data types, functions, and control flow in this beginner-friendly guide.",
     "file": "./blogs/tech/javascript-basic.md"
+  },
+  {
+    "title": "Common Errors in Building PhuBlog & How to Fix Them",
+    "category": "Development",
+    "description": "A comprehensive guide to common errors encountered while building the PhuBlog project, with clear explanations and step-by-step fixes.",
+    "file": "./blogs/tech/phublog-error-fixes.md"
   }
 ]
