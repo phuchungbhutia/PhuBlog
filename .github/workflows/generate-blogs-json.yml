@@ -24,23 +24,20 @@ jobs:
           node-version: '18'
 
       - name: Generate blogs.json
-        run: node ./scripts/generate-blogs-json.js
+        run: node scripts/generate-blogs-json.js
 
       - name: Show git status after generation
         run: |
           git status
           git diff
 
-      - name: Commit & Push blogs.json if changed
+      - name: Commit and push prompts.json
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add blogs.json
-          if ! git diff --cached --quiet; then
-            git commit -m "Update blogs.json [skip ci]"
-            git push
-          else
-            echo "No changes to commit"
-          fi
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git add prompts.json
+          git diff --cached --quiet || git commit -m "Auto-update prompts.json"
+          git push
         env:
+          # Needed if your repo is private or requires auth. For public repos, this might be unnecessary.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
