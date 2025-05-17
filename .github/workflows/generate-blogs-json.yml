@@ -27,12 +27,12 @@ jobs:
           git status
           git diff
 
-      - name: Commit and push prompts.json
+      - name: Commit and push blogs.json
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git add prompts.json
-          git diff --cached --quiet || git commit -m "Auto-update prompts.json"
+          git add blogs.json
+          git diff --cached --quiet || git commit -m "Auto-update blogs.json"
           git push
         env:
           # Needed if your repo is private or requires auth. For public repos, this might be unnecessary.
