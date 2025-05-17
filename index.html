@@ -1,179 +1,211 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>PhuBlog - Home</title>
-<link rel="stylesheet" href="style.css" />
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PhuBlog – Home</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+    header {
+      background: #333;
+      color: white;
+      padding: 1rem;
+    }
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    nav h1 a {
+      color: white;
+      text-decoration: none;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+    }
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    #search {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 1rem;
+      font-size: 1rem;
+    }
+    main {
+      padding: 1rem;
+    }
+    ul.blog-list {
+      list-style: none;
+      padding: 0;
+    }
+    ul.blog-list li {
+      margin-bottom: 1rem;
+    }
+    ul.blog-list li a {
+      font-weight: bold;
+      text-decoration: none;
+      color: #0077cc;
+    }
+    ul.blog-list li p {
+      margin: 0.3rem 0 0;
+    }
+    details summary {
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+    .blog-content {
+      padding: 1rem;
+      background: #f9f9f9;
+    }
+    .back-link {
+      display: inline-block;
+      margin-bottom: 1rem;
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: #eee;
+      margin-top: 2rem;
+    }
+  </style>
 </head>
 <body>
 
-<nav>
-  <a href="index.html" class="logo">PhuBlog</a>
-  <ul>
-    <li><a href="index.html" aria-current="page">Home</a></li>
-    <li><a href="#categories">Categories</a></li>
-    <li><a href="about.html">About</a></li>
-    <li><a href="contact.html">Contact</a></li>
-  </ul>
-</nav>
+  <header>
+    <nav>
+      <h1><a href="#" id="nav-home">PhuBlog</a></h1>
+      <ul>
+        <li><a href="#" id="nav-home-link">Home</a></li>
+        <li><a href="#" id="nav-categories-link">Categories</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <input type="text" id="search" placeholder="Search blogs..." />
+  </header>
 
-<header>
-  <h1>Welcome to PhuBlog</h1>
-  <input type="search" id="searchInput" placeholder="Search blogs..." aria-label="Search blogs" />
-</header>
+  <main id="main-content">
+    <!-- JS will inject content here -->
+  </main>
 
-<main>
-  <section id="recent-posts">
-    <h2>Recent Posts</h2>
-    <ul id="recentList"></ul>
-  </section>
+  <footer>
+    <p>&copy; 2025 PhuBlog. All rights reserved.</p>
+  </footer>
 
-  <section id="top-posts">
-    <h2>Top Posts</h2>
-    <ul id="topList"></ul>
-  </section>
+  <script type="module">
+    const mainContent = document.getElementById("main-content");
+    const searchInput = document.getElementById("search");
 
-  <section id="categories">
-    <h2>Categories</h2>
-    <div id="categoriesContainer"></div>
-  </section>
+    let blogs = [];
 
-  <section id="blogContent" class="hidden">
-    <button id="backBtn">← Back to Home</button>
-    <article id="blogArticle"></article>
-  </section>
-</main>
-
-<script>
-let blogs = [];
-let filteredBlogs = [];
-const recentCount = 5; // number of recent posts to show
-const topCount = 5; // number of top posts (for demo just picks first N)
-
-async function fetchBlogs() {
-  const res = await fetch('blogs.json');
-  blogs = await res.json();
-  filteredBlogs = blogs.slice();
-  renderAll();
-}
-
-function renderAll() {
-  renderRecent();
-  renderTop();
-  renderCategories();
-  hideBlog();
-}
-
-function renderRecent() {
-  const recentList = document.getElementById('recentList');
-  recentList.innerHTML = '';
-  const recent = blogs.slice(-recentCount).reverse();
-  recent.forEach(blog => {
-    const li = document.createElement('li');
-    li.innerHTML = `<a href="#" data-file="${blog.file}">${blog.title}</a>`;
-    recentList.appendChild(li);
-  });
-}
-
-function renderTop() {
-  // For demo: top posts = first N blogs alphabetically
-  const topList = document.getElementById('topList');
-  topList.innerHTML = '';
-  const top = blogs.slice(0, topCount);
-  top.forEach(blog => {
-    const li = document.createElement('li');
-    li.innerHTML = `<a href="#" data-file="${blog.file}">${blog.title}</a>`;
-    topList.appendChild(li);
-  });
-}
-
-function renderCategories() {
-  const container = document.getElementById('categoriesContainer');
-  container.innerHTML = '';
-
-  // group blogs by category
-  const catMap = {};
-  filteredBlogs.forEach(blog => {
-    if (!catMap[blog.category]) catMap[blog.category] = [];
-    catMap[blog.category].push(blog);
-  });
-
-  Object.entries(catMap).forEach(([category, blogs]) => {
-    const catSection = document.createElement('div');
-    catSection.className = 'category-section';
-
-    const header = document.createElement('h3');
-    header.textContent = category;
-    header.className = 'category-header';
-    catSection.appendChild(header);
-
-    const list = document.createElement('ul');
-    list.className = 'blog-list hidden';
-
-    blogs.forEach(blog => {
-      const li = document.createElement('li');
-      li.innerHTML = `<a href="#" data-file="${blog.file}">${blog.title}</a>`;
-      list.appendChild(li);
-    });
-
-    catSection.appendChild(list);
-    container.appendChild(catSection);
-
-    header.addEventListener('click', () => {
-      list.classList.toggle('hidden');
-    });
-  });
-}
-
-function showBlog(file) {
-  fetch(file)
-    .then(res => res.text())
-    .then(md => {
-      const html = marked.parse(md);
-      document.getElementById('blogArticle').innerHTML = html;
-      document.getElementById('blogContent').classList.remove('hidden');
-      document.querySelector('main > section:not(#blogContent)').forEach(el => el.classList.add('hidden'));
-      document.getElementById('backBtn').focus();
-      window.scrollTo(0,0);
-    })
-    .catch(() => alert('Failed to load blog.'));
-}
-
-function hideBlog() {
-  document.getElementById('blogContent').classList.add('hidden');
-  document.querySelectorAll('main > section:not(#blogContent)').forEach(el => el.classList.remove('hidden'));
-  window.scrollTo(0,0);
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  fetchBlogs();
-
-  // Delegate blog link clicks
-  document.body.addEventListener('click', e => {
-    if (e.target.tagName === 'A' && e.target.dataset.file) {
-      e.preventDefault();
-      showBlog(e.target.dataset.file);
+    async function loadJSON() {
+      const res = await fetch("blogs.json");
+      blogs = await res.json();
+      renderHome();
     }
-  });
 
-  // Back button to hide blog content
-  document.getElementById('backBtn').addEventListener('click', hideBlog);
+    function renderHome() {
+      mainContent.innerHTML = `
+        <section>
+          <h2>📌 Recent Posts</h2>
+          ${renderBlogList(blogs.slice(-5).reverse())}
+        </section>
+        <section>
+          <h2>⭐ Top Posts</h2>
+          ${renderBlogList(blogs.slice(0, 3))}
+        </section>
+        <section>
+          <h2>📂 Categories</h2>
+          ${renderCategories()}
+        </section>
+      `;
+    }
 
-  // Search filter
-  const searchInput = document.getElementById('searchInput');
-  searchInput.addEventListener('input', () => {
-    const term = searchInput.value.toLowerCase();
-    filteredBlogs = blogs.filter(blog =>
-      blog.title.toLowerCase().includes(term) ||
-      blog.description.toLowerCase().includes(term) ||
-      blog.category.toLowerCase().includes(term)
-    );
-    renderCategories();
-  });
-});
-</script>
+    function renderBlogList(list) {
+      return `
+        <ul class="blog-list">
+          ${list.map(blog => `
+            <li>
+              <a href="#" onclick="return loadBlog('${blog.file}')">${blog.title}</a>
+              <p>${blog.description}</p>
+            </li>
+          `).join("")}
+        </ul>
+      `;
+    }
+
+    function renderCategories() {
+      const grouped = {};
+      blogs.forEach(blog => {
+        grouped[blog.category] = grouped[blog.category] || [];
+        grouped[blog.category].push(blog);
+      });
+
+      return Object.entries(grouped).map(([cat, items]) => `
+        <details>
+          <summary>${cat}</summary>
+          ${renderBlogList(items)}
+        </details>
+      `).join("");
+    }
+
+    window.loadBlog = async function (file) {
+      try {
+        const res = await fetch(file);
+        const md = await res.text();
+        mainContent.innerHTML = `
+          <div class="blog-content">
+            <a href="#" class="back-link" onclick="renderHome()">← Back to Home</a>
+            <article>${marked.parse(md)}</article>
+          </div>
+        `;
+      } catch (e) {
+        mainContent.innerHTML = `<p>⚠️ Failed to load blog.</p>`;
+      }
+    }
+
+    searchInput.addEventListener("input", (e) => {
+      const q = e.target.value.toLowerCase();
+      const filtered = blogs.filter(blog =>
+        blog.title.toLowerCase().includes(q) || blog.description.toLowerCase().includes(q)
+      );
+      mainContent.innerHTML = `
+        <section>
+          <h2>🔍 Search Results for "${q}"</h2>
+          ${renderBlogList(filtered)}
+        </section>
+      `;
+    });
+
+    // Navigation
+    document.getElementById("nav-home-link").onclick = renderHome;
+    document.getElementById("nav-home").onclick = renderHome;
+    document.getElementById("nav-categories-link").onclick = () => {
+      mainContent.innerHTML = `
+        <section>
+          <h2>📚 All Categories</h2>
+          ${renderCategories()}
+        </section>
+      `;
+    };
+
+    loadJSON();
+  </script>
 
 </body>
 </html>
