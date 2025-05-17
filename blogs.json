@@ -1,0 +1,20 @@
+[
+  {
+    "title": "The Ultimate Morning Routine for a Productive Day",
+    "category": "Lifestyle",
+    "description": "Discover how to build an effective morning routine that boosts your energy, focus, and productivity throughout the day.",
+    "file": "./blogs/life/morning-routine.md"
+  },
+  {
+    "title": "How to Use Git - A Beginner's Guide",
+    "category": "Tech",
+    "description": "A comprehensive step-by-step guide to getting started with Git version control, covering installation, basic commands, branching, and workflows.",
+    "file": "./blogs/tech/how-to-git.md"
+  },
+  {
+    "title": "JavaScript Basics - A Beginner's Guide",
+    "category": "Programming",
+    "description": "Learn the fundamental concepts of JavaScript including variables, data types, functions, and control flow in this beginner-friendly guide.",
+    "file": "./blogs/tech/javascript-basic.md"
+  }
+]
