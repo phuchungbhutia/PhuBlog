@@ -1,61 +1,52 @@
 title: Common Errors in Building PhuBlog & How to Fix Them
 category: Development
-description: A comprehensive guide to common errors encountered while building the PhuBlog project, with clear explanations and step-by-step fixes.
+description: A detailed guide covering common errors faced while building the PhuBlog project and step-by-step solutions to fix them.
 
 ---
 
 # Common Errors in Building PhuBlog & How to Fix Them
 
-Building a blog site like **PhuBlog** involves multiple moving parts—Node.js scripts, GitHub Actions workflows, fetching markdown files, styling with CSS, and deploying on GitHub Pages. Along the way, you may encounter various errors and bugs. This guide compiles the most common issues you might face during development and how to resolve them efficiently.
+Building PhuBlog involves multiple technologies such as Node.js, GitHub Actions, JavaScript, CSS, and GitHub Pages. During development, several errors and issues can arise. This guide outlines common problems and how to resolve them efficiently.
 
 ---
 
 ## 1. ReferenceError: require is not defined in ES module scope
 
-### Problem
+**Cause:** Using `require()` in a Node.js project configured for ES modules (`"type": "module"` in `package.json`).
 
-Your Node.js script throws this error when using `require()` because the project is configured to use ES modules (`"type": "module"` in `package.json`).
+**Fix:**
 
-### Solution
-
-- Convert the script to ES module syntax:
+- Replace `require()` with `import` syntax:
   ```js
   import fs from 'fs';
   ```
 
 ```
-* Or rename your script file extension to `.cjs` to use CommonJS.
-* Alternatively, remove `"type": "module"` from `package.json` to revert to CommonJS.
+* Or rename script files to `.cjs` to use CommonJS.
+* Alternatively, remove `"type": "module"` from `package.json`.
 
 ---
 
-## 2. GitHub Actions ignoring `blogs.json` due to `.gitignore`
+## 2. GitHub Actions Ignores `blogs.json` Due to `.gitignore`
 
-### Problem
+**Cause:** `blogs.json` is listed in `.gitignore` so Git won’t add it, causing workflow commit failures.
 
-Git refuses to commit `blogs.json` because it’s listed or matched by patterns in `.gitignore`.
+**Fix:**
 
-### Solution
-
-* Remove or comment out `blogs.json` in `.gitignore`.
-* If you need to keep ignoring generally but commit this file explicitly, use:
-  ```bash
-  git add -f blogs.json
-```
-
-* Modify your GitHub Actions workflow to force-add ignored files during commit.
+* Remove or comment out `blogs.json` from `.gitignore`.
+* Use `git add -f blogs.json` to force add.
+* Update your GitHub Actions workflow to force add ignored files.
 
 ---
 
 ## 3. Workflow Not Triggering on Push
 
-### Problem
+**Cause:** Workflow triggers are misconfigured.
 
-Your GitHub Actions workflow does not run after pushing code changes.
+**Fix:**
 
-### Solution
-
-* Ensure your workflow `on` section covers all relevant branches and paths:
+* Ensure `on: push` in `.github/workflows/main.yml` includes relevant branches and paths.
+* Example:
   ```yaml
   on:
     push:
@@ -64,136 +55,109 @@ Your GitHub Actions workflow does not run after pushing code changes.
       paths:
         - 'blogs/**'
         - 'scripts/**'
-  ```
-* Remove path filters temporarily to test trigger.
+```
+
+* Temporarily remove `paths` to debug.
 
 ---
 
-## 4. Blog Content Fails to Load ("Failed to load blog" Message)
+## 4. Blog Content Fails to Load (“Failed to load blog”)
 
-### Problem
+**Cause:** Incorrect or inaccessible file paths; CORS issues when opening files locally.
 
-Clicking on a blog link shows an error or fails to fetch the markdown content.
+**Fix:**
 
-### Solution
-
-* Verify `blogs.json` contains correct relative paths with POSIX slashes (`./blogs/filename.md`).
-* Confirm your fetch URLs are constructed correctly and accessible.
-* Deploy to GitHub Pages or use a local server (`live-server`) to avoid CORS and local file protocol issues.
+* Verify `blogs.json` contains correct relative POSIX-style paths (`./blogs/filename.md`).
+* Test on a local server (e.g., `live-server`) or deploy to GitHub Pages.
+* Ensure fetch URLs are constructed properly.
 
 ---
 
 ## 5. Search Not Working Properly
 
-### Problem
+**Cause:** Case sensitivity or missing event binding.
 
-Search bar does not filter blogs as expected.
+**Fix:**
 
-### Solution
-
-* Bind event listeners properly to the search input.
-* Normalize search and blog text to lowercase for case-insensitive matching.
-* Update the blog list DOM dynamically on input events.
+* Normalize search input and blog text to lowercase for case-insensitive matching.
+* Attach `input` event listeners properly to update displayed blogs dynamically.
 
 ---
 
-## 6. Home Page Missing Recent, Top Posts, or Categories
+## 6. Home Page Missing Recent, Top Posts or Categories
 
-### Problem
+**Cause:** Missing or incorrect metadata in `blogs.json`.
 
-Sections on the home page are empty or missing data.
+**Fix:**
 
-### Solution
-
-* Confirm `blogs.json` loads correctly.
-* Ensure each blog entry includes required metadata such as `date`, `popularity`, and `category`.
-* Implement sorting and grouping logic in JavaScript correctly.
+* Confirm all blog entries have necessary fields (`date`, `popularity`, `category`).
+* Check sorting/grouping logic in JavaScript.
 
 ---
 
 ## 7. Navbar Links Not Working
 
-### Problem
+**Cause:** Incorrect `href` attributes or missing files.
 
-Navigation links (Home, Categories, About, Contact) do nothing or cause errors.
+**Fix:**
 
-### Solution
-
-* Verify correct `href` attributes, e.g., `index.html`, `about.html`.
-* Ensure linked HTML pages exist at correct locations.
-* For single-page navigation, add appropriate JavaScript handlers.
+* Verify correct paths (e.g., `index.html`, `about.html`).
+* Ensure those files exist in repo root.
+* Use JavaScript navigation for SPA behavior if desired.
 
 ---
 
-## 8. Back to Home Link Not Functioning in Blog View
+## 8. Back to Home Link Not Working in Blog View
 
-### Problem
+**Cause:** Missing event handler or incorrect link.
 
-No way to return to the main blog list after opening a post.
+**Fix:**
 
-### Solution
-
-* Add event handler to back button to toggle views or navigate to `index.html`.
-* Use clear and consistent IDs/classes for toggling visibility.
+* Add click event on back link/button to toggle views or redirect to `index.html`.
+* Use consistent IDs/classes for UI elements.
 
 ---
 
 ## 9. CSS Styling Not Applying or Inconsistent
 
-### Problem
+**Cause:** Missing stylesheet includes or conflicting styles.
 
-Pages lack styling or have different appearances.
+**Fix:**
 
-### Solution
-
-* Include a common CSS file (`style.css`) in all HTML files.
-* Avoid conflicting CSS selectors.
-* Structure styles for navbar, content, blog view in one stylesheet.
+* Link the common `style.css` in all HTML files.
+* Use modular CSS with clear selectors to avoid conflicts.
 
 ---
 
 ## 10. Floating Navbar Misbehaving
 
-### Problem
+**Cause:** CSS position or z-index issues.
 
-Navbar does not stick to the top or overlaps content.
+**Fix:**
 
-### Solution
-
-* Use CSS `position: fixed; top: 0; width: 100%; z-index: 1000;`.
-* Add padding or margin to the top of the main content so it is not hidden behind the navbar.
+* Use `position: fixed; top: 0; width: 100%; z-index: 1000;` for navbar.
+* Add padding-top to main content equal to navbar height.
 
 ---
 
 ## 11. GitHub Pages 404 or Path Errors
 
-### Problem
+**Cause:** Incorrect file paths or missing `.nojekyll`.
 
-Markdown files or assets fail to load on GitHub Pages.
+**Fix:**
 
-### Solution
-
-* Check that file paths in JSON and fetch calls are relative and correct.
-* Add an empty `.nojekyll` file to the root directory.
-* Configure GitHub Pages base URL correctly if using a project site.
+* Use relative POSIX-style paths in JSON and fetch calls.
+* Add an empty `.nojekyll` file at repo root.
+* Configure GitHub Pages base URL if project site.
 
 ---
 
-# Final Tips
+# Conclusion
 
-* Use browser dev tools (`Console` and `Network`) to debug fetch errors and DOM updates.
-* Test your site locally on a static server to avoid file protocol restrictions.
-* Regularly commit and push changes with descriptive messages.
-* Use GitHub Actions logs for CI/CD troubleshooting.
+Troubleshooting these issues will make your PhuBlog project smooth and reliable. Use browser dev tools, test locally, and check GitHub Actions logs to debug effectively. Happy blogging!
 
 ---
 
-Building PhuBlog was a great learning journey. Facing and fixing these errors will make your project robust and maintainable. Happy coding!
+*— PhuBlog Development Team*
 
----
 
-*If you have any questions or need help, feel free to reach out or open an issue in the repository.*
-
----
-
-*— PhuBlog Team*
