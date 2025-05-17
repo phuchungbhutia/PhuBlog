@@ -23,6 +23,9 @@ jobs:
         run: npm install || echo "No dependencies"
 
       - name: Generate blogs.json
+        run: node generate-blogs-json.js
+
+      - name: Generate blogs.json
         run: node scripts/generate-blogs-json.js
 
       - name: Commit and push updated blogs.json
